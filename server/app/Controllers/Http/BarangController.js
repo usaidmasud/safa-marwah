@@ -11,8 +11,10 @@
 const Barang = use('App/Models/Barang')
 const AuthorizationService = use('App/Services/AuthorizationService')
 const { sanitizor } = use('Validator')
+const Helpers = use('Helpers')
 
 class BarangController {
+  
   async index ({ auth }) {
     const user = await auth.getUser()
     return await user.barangs().fetch()
@@ -21,26 +23,38 @@ class BarangController {
   async store ({ request, auth }) {
     const user = await auth.getUser()
     const input = request.all()
-    // upload gambar
+    const slug = sanitizor.slug(input.nama_barang)
+
+    const cek = await Barang.findBy('slug',slug)
+    if (cek) {
+      return {
+        'message' : input.nama_barang + ' sudah di pakai, silahkan diganti dengan nama yang lain'
+      }
+    }
 
     const barang = new Barang()
-    barang.fill({
-      nama_barang : input.nama_barang,
-      slug : sanitizor.slug('input.nama_barang'),
-      qty : input.qty,
-      harga_beli : input.harga_beli,
-      diskon : input.diskon,
-      harga_jual : input.harga_jual,
-      satuan_id : input.satuan_id,
-      barang_id : input.barang_id,
-      thumbnail : input.thumbnail,
+    barang.nama_barang = input.nama_barang
+    barang.slug = slug
+    barang.qty = input.qty
+    barang.harga_beli = input.harga_beli
+    barang.diskon = input.diskon
+    barang.harga_jual = input.harga_jual
+    barang.satuan_id = input.satuan_id
+    barang.kategori_id = input.kategori_id
+    
+    // upload gambar
+    const myPicture = request.file('thumbnail')
+    barang.thumbnail = new Date().getTime()+'.'+myPicture.subtype
+    await user.barangs().save(barang)
+
+    await myPicture.move(Helpers.publicPath('uploads'), {
+      name : barang.thumbnail
     })
-    // await user.barangs().save(barang)
-    return input
+
+    return barang
   }
 
-
-  async show ({ request }) {
+  async show ({ auth, params }) {
     
   }
 
