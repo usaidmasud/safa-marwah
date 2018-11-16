@@ -27,15 +27,23 @@
       <aside class="column is-2 section">
         <p class="menu-label is-hidden-touch">General</p>
         <ul class="menu-list">
-          <li
-            v-for="(item, key) of items"
-            :key="key">
             <nuxt-link
-              :to="item.to"
+              to="/"
               exact-active-class="is-active">
-              <b-icon :icon="item.icon"/> {{ item.title }}
+              <b-icon icon="home"/> Home
             </nuxt-link>
-          </li>
+
+            <nuxt-link
+              to="/inspire"
+              exact-active-class="is-active">
+              <b-icon icon="lightbulb"/> Inspire
+            </nuxt-link>
+
+            <nuxt-link
+              to="/user/add"
+              exact-active-class="is-active">
+              <b-icon icon="account"/> User
+            </nuxt-link>
         </ul>
       </aside>
 
@@ -54,7 +62,8 @@ export default {
       items: [
         { title: 'Home', icon: 'home', to: { name: 'index' } },
         { title: 'Inspire', icon: 'lightbulb', to: { name: 'inspire' } },
-        { title: 'User', icon: 'account', to: { name: 'user' } }
+        { title: 'User', icon: 'account', to: { name: 'user' } },
+        { title: 'Add User', icon: 'account', to: { name: 'user/add' } }
       ]
     }
   }
