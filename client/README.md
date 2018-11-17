@@ -1,6 +1,6 @@
-# client
+# persons
 
-> toko-safamarwah
+> My awe-inspiring Nuxt.js project
 
 ## Build Setup
 
