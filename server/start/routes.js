@@ -26,7 +26,7 @@ Route.post('upload', async({request})=>{
 })
 
 Route.group(() => {
-  Route.post('register','UserController.register')
+  Route.post('register','UserController.register').validator('StoreUser')
   Route.post('login','UserController.login')
   Route.get('users','UserController.index')
 }).prefix('api')

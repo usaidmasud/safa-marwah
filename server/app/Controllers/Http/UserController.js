@@ -8,7 +8,7 @@ class UserController {
         return user
     }
 
-    async register({request}) {
+    async register({request, response}) {
         const {password, email, role} = request.all()
         const user = await User.create({
             email,
@@ -16,15 +16,19 @@ class UserController {
             password,
             role
         })
-        return user
+        return response.json({
+            status : 'success',
+            message : 'Data user berhasil disimpan'
+
+        })
     }
 
     async login({ request, auth }) {
         const { email, password } = request.all()
         const token = await auth.attempt(email, password)
         return token
-
     }
+
 }
 
 module.exports = UserController

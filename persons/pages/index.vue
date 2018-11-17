@@ -1,66 +1,68 @@
+
+
 <template>
-  <section class="container">
-    <div>
-      <logo/>
-      <h1 class="title">
-        persons
-      </h1>
-      <h2 class="subtitle">
-        My awe-inspiring Nuxt.js project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green">Documentation</a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey">GitHub</a>
-      </div>
-    </div>
-  </section>
+  <b-form @submit="loginAction">
+    <b-form-group
+      label="Email : ">
+      <b-form-input
+        type="email"
+        v-model="form.email"
+        required
+        placeholder="Email">
+      </b-form-input>
+    </b-form-group>
+    <b-form-group
+      label="Password : ">
+      <b-form-input
+        type="password"
+        v-model="form.password"
+        required
+        placeholder="Password">
+      </b-form-input>
+    </b-form-group>
+    <b-button type="submit" variant="primary">Login</b-button>
+  </b-form>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
+
+import axios from 'axios'
+const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
-  components: {
-    Logo
+  // middleware : 'notAuthenticated',
+  layout : 'app',
+  data(){
+    return {
+      form : {
+        email : 'hilya@gmail.com',
+        password : '123456',
+      }
+    }
+  },
+  methods : {
+    loginAction (evt) {
+      evt.preventDefault();
+      let login = {
+        email : this.form.email,
+        password : this.form.password,
+      }
+      axios.post('http://127.0.0.1:3333/api/login', login)
+      .then((response) => {
+        let result = response.data
+        console.log(response);
+        const auth = {
+          accessToken : result.token
+        }
+        this.$store.commit('setAuth', auth) // mutating to store for client rendering
+        Cookie.set('auth', auth) // saving token in cookie for server rendering
+        this.$router.push('/')
+      })
+      .catch((error) => {
+        console.log(error);
+        
+      })
+    },
   }
 }
 </script>
-
-<style>
-
-.container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
-}
-</style>
