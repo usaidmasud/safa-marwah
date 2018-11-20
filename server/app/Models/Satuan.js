@@ -5,7 +5,11 @@ const Model = use('Model')
 
 class Satuan extends Model {
     user(){
-        return this.belongsTo('App/Model/User')
+        return this.belongsTo('App/Models/User')
+    }
+
+    barangs() {
+        return this.hasMany('App/Models/Barang')
     }
 
 }

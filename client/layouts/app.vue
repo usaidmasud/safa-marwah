@@ -15,6 +15,9 @@
                     <li class="nav-item">
                         <router-link class="nav-link" to="/persons">Person</router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/barangs">Barang</router-link>
+                    </li>
                 </b-navbar-nav>
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">

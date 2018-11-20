@@ -10,7 +10,7 @@ class StoreBarang {
       harga_jual : 'required',
       satuan_id : 'required',
       kategori_id : 'required',
-      // thumbnail : 'file|file_ext:png,jpg,jpeg|file_size:2mb',
+      thumbnail : 'file|file_ext:png,jpg,jpeg|file_size:2mb',
     }
   }
 

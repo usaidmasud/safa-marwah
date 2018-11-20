@@ -21,9 +21,14 @@ class SatuanController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ auth }) {
+  async index ({ auth, response }) {
     const user = await auth.getUser()
-    return await user.satuans().fetch()
+    const satuan = await user.satuans().fetch()
+    return response.status(200).json({
+      status : 200,
+      message : 'success',
+      data : satuan
+    })
   }
 
   async store ({ request, auth }) {
@@ -39,25 +44,40 @@ class SatuanController {
     return satuan
   }
 
-  async show ({ params, request, response, view }) {
+  async show ({request, response }) {
+    const satuan = request.satuan
+    
+    return response.status(200).json({
+      status : 200,
+      data : satuan
+    })
   }
 
-  async update ({ params, request, auth }) {
+  async update ({ params, request, auth, response }) {
     const user = await auth.getUser()
     const satuan = await Satuan.find(params.id)
     AuthorizationService.verifyPermission(satuan, user)
     satuan.merge(request.only('nama_satuan'))
+
     await satuan.save()
-    return satuan
+    return response.status(200).json({
+      status : 200,
+      data : satuan
+    })
+    
   }
 
-  async destroy ({ params, auth }) {
+  async destroy ({ request, auth, response }) {
     const user = await auth.getUser()
-    const satuan = await Satuan.find(params.id)
+    const satuan = request.satuan
     AuthorizationService.verifyPermission(satuan, user)
 
     await satuan.delete()
-    return satuan
+    return response.status(200).json({
+      status : 200,
+      message : 'Data berhasil dihapus',
+      data : satuan
+    })
   }
 }
 

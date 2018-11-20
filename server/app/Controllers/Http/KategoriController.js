@@ -13,9 +13,13 @@ const AuthorizationService = use('App/Services/AuthorizationService')
 
 class KategoriController {
   
-  async index ({ auth }) {
+  async index ({ auth, response }) {
     const user = await auth.getUser()
-    return await user.kategoris().fetch()
+    const kategori = await user.kategoris().fetch()
+    return response.status(200).json({
+      message : 'success',
+      data : kategori
+    })
   }
 
   async store ({ request, auth }) {

@@ -17,6 +17,8 @@
 const Route = use('Route')
 const Helpers = use('Helpers')
 
+const Database = use('Database')
+
 Route.get('/', () => {
   return { greeting: 'Hello world in JSON' }
 })
@@ -29,22 +31,29 @@ Route.group(() => {
   Route.post('register','UserController.register').validator('StoreUser')
   Route.post('login','UserController.login')
   Route.get('users','UserController.index')
+
+  Route.get('path_img',()=>{
+    return Helpers.publicPath('uploads')
+  })
 }).prefix('api')
 
 Route.group(() => {
   // satuan
   Route.post('satuans','SatuanController.store')
   Route.get('satuans','SatuanController.index')
-  Route.delete('satuans/:id','SatuanController.destroy')
-  Route.patch('satuans/:id','SatuanController.update')
+  Route.get('satuans/:id','SatuanController.show').middleware('findSatuan')
+  Route.delete('satuans/:id','SatuanController.destroy').middleware('findSatuan')
+  Route.patch('satuans/:id','SatuanController.update').middleware('findSatuan')
   // kategori
   Route.post('kategoris','KategoriController.store')
   Route.get('kategoris','KategoriController.index')
   Route.delete('kategoris/:id','KategoriController.destroy')
   Route.patch('kategoris/:id','KategoriController.update')
   // kategori
-  Route.post('barangs','BarangController.store').validator('StoreBarang')
+  Route.post('barangs','BarangController.store').validator('StoreBarang').middleware('slugBarang')
   Route.get('barangs','BarangController.index')
-  Route.delete('barangs/:id','BarangController.destroy')
-  Route.patch('barangs/:id','BarangController.update')
+  Route.delete('barangs/:id','BarangController.destroy').middleware(['findBarang'])
+  Route.patch('barangs/:id','BarangController.update').middleware(['findBarang'])
+  Route.get('barangs/:id','BarangController.show').middleware(['findBarang'])
+
 }).prefix('api').middleware('auth')

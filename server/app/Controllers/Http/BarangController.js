@@ -1,40 +1,33 @@
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
-
-/**
- * Resourceful controller for interacting with barangs
- */
-
-const Barang = use('App/Models/Barang')
 const AuthorizationService = use('App/Services/AuthorizationService')
-const { sanitizor } = use('Validator')
 const Helpers = use('Helpers')
+const Barang = use('App/Models/Barang')
 
 class BarangController {
   
-  async index ({ auth }) {
+  async index ({ response, auth }) {
     const user = await auth.getUser()
-    return await user.barangs().fetch()
+    const barang =  await user.barangs()
+      .with('satuan')
+      .with('kategori')
+      .with('user')
+      .fetch()
+
+    return response.status(200).json({
+      message : 'list barang',
+      data : barang
+    })
   }
 
-  async store ({ request, auth }) {
+  async store ({response, request, auth }) {
     const user = await auth.getUser()
     const input = request.all()
-    const slug = sanitizor.slug(input.nama_barang)
-
-    const cek = await Barang.findBy('slug',slug)
-    if (cek) {
-      return {
-        'message' : input.nama_barang + ' sudah di pakai, silahkan diganti dengan nama yang lain'
-      }
-    }
+    
 
     const barang = new Barang()
     barang.nama_barang = input.nama_barang
-    barang.slug = slug
+    barang.slug = request.slug
     barang.qty = input.qty
     barang.harga_beli = input.harga_beli
     barang.diskon = input.diskon
@@ -51,29 +44,62 @@ class BarangController {
       name : barang.thumbnail
     })
 
-    return barang
+    return response.status(202).json({
+      message : 'data berhasil disimpan',
+      data  : barang
+    })
   }
 
-  async show ({ auth, params }) {
+  async show ({ request, response}) {
+    const barang = request.barang
     
+    response.status(200).json({
+      message : 'success',
+      data : barang
+    })
   }
 
-  async update ({ params, request, auth }) {
+  async update ({ request, auth, response }) {
     const user = await auth.getUser()
-    const barang = await Barang.find(params.id)
+    const barang = request.barang
+    const input = request.all()
     AuthorizationService.verifyPermission(barang, user)
-    barang.merge(request.only('nama_barang'))
-    await barang.save()
+    // upload gambar
+    const myPicture = request.file('thumbnail')
+    if (myPicture) {
+      barang.thumbnail = new Date().getTime()+'.'+myPicture.subtype
+      await myPicture.move(Helpers.publicPath('uploads'), {
+        name : barang.thumbnail
+      })
+    }
+  
+    barang.nama_barang = input.nama_barang
+    barang.slug = request.slug
+    barang.qty = input.qty
+    barang.harga_beli = input.harga_beli
+    barang.diskon = input.diskon
+    barang.harga_jual = input.harga_jual
+    barang.satuan_id = input.satuan_id
+    barang.kategori_id = input.kategori_id
 
-    return barang
+    await user.barangs().save(barang)
+
+    return response.status(202).json({
+      message : 'data berhasil diupdate',
+      data  : barang
+    })
+
   }
 
-  async destroy ({ params, auth }) {
+  async destroy ({ request, response, auth }) {
     const user = await auth.getUser()
-    const barang = await Barang.find(params.id)
+    const barang = request.barang
     AuthorizationService.verifyPermission(barang, user)
     await barang.delete()
-    return barang
+    response.status(200).json({
+      message : 'data berhasil dihapus',
+      data : barang
+    })
   }
 }
 

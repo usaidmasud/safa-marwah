@@ -5,15 +5,15 @@ const Model = use('Model')
 
 class Barang extends Model {
     user(){
-        return this.belongsTo('App/Model/User')
+        return this.belongsTo('App/Models/User')
     }
 
     satuan(){
-        return this.belongsTo('App/Model/Satuan')
+        return this.belongsTo('App/Models/Satuan')
     }
 
     kategori(){
-        return this.belongsTo('App/Model/Kategori')
+        return this.belongsTo('App/Models/Kategori')
     }
 }
 

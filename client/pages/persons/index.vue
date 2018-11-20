@@ -29,6 +29,7 @@
 </template>
 
 <script>
+
 export default {
     layout : 'app',
     data(){
@@ -44,8 +45,7 @@ export default {
         async get_data(){
             const url = 'http://127.0.0.1:3333/api/users';
             const response = await this.$axios.$get(url)
-            return response
-            
+            this.users = response;
         },
         deleteUser(id) {
             alert(id)
